@@ -234,6 +234,8 @@ export default function EncuestaGuardada() {
   const [modalDistancia, setModalDistancia] = useState(false);
   const [distanciaActual, setDistanciaActual] = useState(0);
 
+  const [modalSinGPSEditar, setModalSinGPSEditar] = useState(false);
+
   const animsRef = useRef<{ [key: string]: Animated.Value }>({});
   const getAnim  = (key: string) => {
     if (!animsRef.current[key]) animsRef.current[key] = new Animated.Value(0);
@@ -443,7 +445,13 @@ export default function EncuestaGuardada() {
 
           setModalObteniendo(false);
 
-          if (lat2 !== null && lng2 !== null && enc.LATITUD !== null && enc.LONGITUD !== null) {
+          if (lat2 === null || lng2 === null) {
+            setModalSinGPSEditar(true);
+            return;
+          }
+
+          // Validar distancia
+          if (enc.LATITUD !== null && enc.LONGITUD !== null) {
             const distancia = calcularDistanciaMetros(enc.LATITUD, enc.LONGITUD, lat2, lng2);
             if (distancia > 500) {
               setDistanciaActual(distancia);
@@ -989,6 +997,64 @@ export default function EncuestaGuardada() {
                   flexDirection: "row", gap: 8,
                 }}
                 onPress={() => setModalDistancia(false)}
+              >
+                <Icon name="check" color="white" size={18} />
+                <Text style={{ color: C.blanco, fontWeight: "800", fontSize: 15 }}>
+                  Entendido
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          transparent
+          visible={modalSinGPSEditar}
+          animationType="fade"
+          onRequestClose={() => setModalSinGPSEditar(false)}
+        >
+          <View style={{
+            flex: 1, backgroundColor: "rgba(0,0,0,0.6)",
+            justifyContent: "center", alignItems: "center",
+          }}>
+            <View style={{
+              backgroundColor: C.blanco, borderRadius: 24,
+              padding: 28, width: "85%", alignItems: "center",
+              shadowColor: "#000", shadowOffset: { width: 0, height: 8 },
+              shadowOpacity: 0.25, shadowRadius: 20, elevation: 12,
+            }}>
+              <View style={{
+                width: 80, height: 80, borderRadius: 40,
+                backgroundColor: C.redLight,
+                alignItems: "center", justifyContent: "center",
+                marginBottom: 20,
+              }}>
+                <Icon name="gps-off" color={C.red} size={40} />
+              </View>
+
+              <Text style={{
+                fontSize: 20, fontWeight: "900", color: C.texto,
+                textAlign: "center", marginBottom: 8, letterSpacing: -0.3,
+              }}>
+                Sin ubicación GPS
+              </Text>
+
+              <Text style={{
+                fontSize: 13, color: C.textoSuave,
+                textAlign: "center", lineHeight: 20, marginBottom: 24,
+              }}>
+                No se pudo obtener tu ubicación. Activa el GPS e intenta nuevamente para poder continuar la encuesta.
+              </Text>
+
+              <View style={{ width: "100%", height: 1, backgroundColor: C.grisMedio, marginBottom: 16 }} />
+
+              <TouchableOpacity
+                style={{
+                  backgroundColor: C.navy, width: "100%", height: 48,
+                  borderRadius: 14, alignItems: "center", justifyContent: "center",
+                  flexDirection: "row", gap: 8, marginBottom: 10,
+                }}
+                onPress={() => setModalSinGPSEditar(false)}
               >
                 <Icon name="check" color="white" size={18} />
                 <Text style={{ color: C.blanco, fontWeight: "800", fontSize: 15 }}>
