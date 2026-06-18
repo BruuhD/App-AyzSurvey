@@ -477,13 +477,23 @@ export default function Encuesta() {
 
       if (!rptaCond) { idx++; continue; }
 
-      const opcionCond = opciones.find(
-        (o) => o.NROPREGUNTA === nroCond && String(o.VALUE_OPCION) === rptaCond.TXTRESULTADO
-      );
-      const mostrar = opcionCond
-        ? valoresEsperados.includes(opcionCond.VALUE_OPCION)
-        : valoresEsperados.includes(parseInt(String(rptaCond.TXTRESULTADO)));
+      let mostrar = false;
 
+      const preguntaCond = preguntas.find(p => p.NROPREGUNTA === nroCond);
+      const esCheckList = preguntaCond?.TIPOPREGUNTA === "CheckList";
+
+      if (esCheckList) {
+        const valoresSeleccionados = toNumArray(rptaCond.TXTRESULTADO);
+        mostrar = valoresSeleccionados.some(v => valoresEsperados.includes(v));
+      } else {
+        const opcionCond = opciones.find(
+          (o) => o.NROPREGUNTA === nroCond && String(o.VALUE_OPCION) === String(rptaCond.TXTRESULTADO)
+        );
+
+        mostrar = opcionCond
+          ? valoresEsperados.includes(opcionCond.VALUE_OPCION)
+          : valoresEsperados.includes(parseInt(String(rptaCond.TXTRESULTADO)));
+      }
       if (mostrar) break;
       idx++;
     }
