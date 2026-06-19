@@ -2,7 +2,6 @@ import { enviarEncuestaAPI } from "@/src/api/service";
 import { C, styles } from "@/src/styles/guardadoStyle";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as FileSystem from 'expo-file-system/legacy';
-import * as Location from "expo-location";
 import { router } from "expo-router";
 import * as Sharing from "expo-sharing";
 import { useEffect, useRef, useState } from "react";
@@ -418,7 +417,7 @@ export default function EncuestaGuardada() {
       {
         text: "Continuar",
         style: "destructive",
-        onPress: async () => {
+        /* onPress: async () => {
           setModalObteniendo(true);
 
           let lat2: number | null = null;
@@ -461,6 +460,24 @@ export default function EncuestaGuardada() {
           }
 
           // Proceder con edición
+          const nuevas = encuestas.filter((e) => e.CODIGOPK !== enc.CODIGOPK);
+          setEncuestas(nuevas);
+          await AsyncStorage.setItem(STORAGE_ENCUESTAS, JSON.stringify(nuevas));
+          await AsyncStorage.setItem(STORAGE_EDIT, "editar");
+          await AsyncStorage.setItem("AYZ-respuestas-aux", JSON.stringify(enc));
+          const ruta = rutasGuardadas.find((r) => r.CODIGOPK === enc.CODIGOPK);
+          if (ruta) {
+            const { CODIGOPK, ...rutaSinPK } = ruta;
+            const rutasStr = await AsyncStorage.getItem(STORAGE_RUTAS);
+            const rutas: RutasOrigin[] = rutasStr ? JSON.parse(rutasStr) : [];
+            rutas.push(rutaSinPK);
+            await AsyncStorage.setItem(STORAGE_RUTAS, JSON.stringify(rutas));
+            router.push({ pathname: "/encuesta/encuesta", params: { id: String(enc.IDENCUESTA), lat: String(enc.LATITUD), lng: String(enc.LONGITUD) } });
+          } else {
+            router.push({ pathname: "/encuesta/encuesta", params: { id: String(enc.IDENCUESTA) } });
+          }
+        }, */
+        onPress: async () => {
           const nuevas = encuestas.filter((e) => e.CODIGOPK !== enc.CODIGOPK);
           setEncuestas(nuevas);
           await AsyncStorage.setItem(STORAGE_ENCUESTAS, JSON.stringify(nuevas));
